@@ -7,11 +7,9 @@ public class CommentUpdateResponseDto {
 
     private final Long id;
     private final String contents;
-    private final String user;
 
-    public CommentUpdateResponseDto(Long id, String contents, String user) {
+    public CommentUpdateResponseDto(Long id, String contents) {
         this.id = id;
         this.contents = contents;
-        this.user = user;
     }
 }

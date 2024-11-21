@@ -2,6 +2,7 @@ package com.sparta.schedule1.controller;
 
 import com.sparta.schedule1.dto.Todo.TodoSimpleResponseDto;
 import com.sparta.schedule1.dto.Todo.*;
+import com.sparta.schedule1.entity.Todo;
 import com.sparta.schedule1.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,7 @@ public class TodoController {
     }
 
     @DeleteMapping("/{todoId}")
-    public void deleteTodo(@PathVariable Long todoId) {
-        todoService.deleteTodo(todoId);
+    public void deleteTodo(@PathVariable Long todoId, @RequestBody TodoDeleteDto todoDeleteDto) {
+        todoService.deleteTodo(todoId, todoDeleteDto);
     }
 }

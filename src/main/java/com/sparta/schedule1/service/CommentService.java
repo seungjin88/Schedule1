@@ -1,10 +1,13 @@
 package com.sparta.schedule1.service;
 
 import com.sparta.schedule1.dto.Comment.*;
+import com.sparta.schedule1.dto.User.UserSaveResponseDto;
 import com.sparta.schedule1.entity.Comment;
 import com.sparta.schedule1.entity.Todo;
+import com.sparta.schedule1.entity.User;
 import com.sparta.schedule1.repository.CommentRepository;
 import com.sparta.schedule1.repository.TodoRepository;
+import com.sparta.schedule1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +22,27 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final TodoRepository todoRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public CommentSaveResponseDto saveComment(Long todoId, CommentSaveRequestDto commentSaveRequestDto) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new NullPointerException("할 일이 없습니다."));
 
-        Comment newComment = new Comment(commentSaveRequestDto.getContents(), commentSaveRequestDto.getUser(), todo);
+        User user = userRepository.findById(commentSaveRequestDto.getId()).orElseThrow(() -> new NullPointerException("할 일이 없습니다."));
+
+        Comment newComment = new Comment(commentSaveRequestDto.getContents(), user, todo);
 
         Comment savedComment = commentRepository.save(newComment);
 
-        return new CommentSaveResponseDto(savedComment.getId(), savedComment.getContents(), savedComment.getUser());
+        return new CommentSaveResponseDto(savedComment.getId(), savedComment.getContents(), new UserSaveResponseDto(user.getId(),user.getUsername(), user.getEmail()));
     }
 
     public CommentDetailResponseDto getComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NullPointerException("댓글이 없습니다."));
 
-        return new CommentDetailResponseDto(comment.getId(), comment.getContents(), comment.getUser(), comment.getCreatedAt(), comment.getModifiedAt());
+        User user = comment.getUser();
+
+        return new CommentDetailResponseDto(comment.getId(), comment.getContents(), new UserSaveResponseDto(user.getId(),user.getUsername(), user.getEmail()), comment.getCreatedAt(), comment.getModifiedAt());
     }
 
     public List<CommentSimpleResponseDto> getComments(Long todoId) {
@@ -43,7 +51,8 @@ public class CommentService {
         List<CommentSimpleResponseDto> dtoList = new ArrayList<>();
 
         for(Comment comment : commentList) {
-            CommentSimpleResponseDto dto = new CommentSimpleResponseDto(comment.getId(), comment.getContents(), comment.getUser(), comment.getCreatedAt(), comment.getModifiedAt());
+            User user = comment.getUser();
+            CommentSimpleResponseDto dto = new CommentSimpleResponseDto(comment.getId(), comment.getContents(), new UserSaveResponseDto(user.getId(),user.getUsername(), user.getEmail()), comment.getCreatedAt(), comment.getModifiedAt());
             dtoList.add(dto);
         }
         return dtoList;
@@ -53,9 +62,9 @@ public class CommentService {
     public CommentUpdateResponseDto updateComment(Long commentId, CommentUpdateRequestDto commentUpdateRequestDto) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NullPointerException("댓글이 없습니다."));
 
-        comment.updateComment(commentUpdateRequestDto.getContents(), commentUpdateRequestDto.getUser());
+        comment.updateComment(commentUpdateRequestDto.getContents());
 
-        return new CommentUpdateResponseDto(comment.getId(), comment.getContents(), comment.getUser());
+        return new CommentUpdateResponseDto(comment.getId(), comment.getContents());
     }
 
     @Transactional

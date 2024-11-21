@@ -1,7 +1,5 @@
-package com.sparta.schedule1.repository;
+package com.sparta.schedule1.entity;
 
-import com.sparta.schedule1.entity.Todo;
-import com.sparta.schedule1.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +18,7 @@ public class Manager {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
-    
+
     public Manager(User user, Todo todo) {
         this.user = user;
         this.todo = todo;

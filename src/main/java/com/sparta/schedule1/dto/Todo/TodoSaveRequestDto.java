@@ -7,5 +7,5 @@ public class TodoSaveRequestDto {
 
     private String title;
     private String contents;
-    private String user;
+    private Long userId;
 }
